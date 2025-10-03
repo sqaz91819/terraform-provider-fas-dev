@@ -1,3 +1,11 @@
+## 1.0.4 (October 3, 2025)
+
+BUG FIXES:
+* resource/fortiappseccloud_waf_app: Prevent panic (`interface{} is nil, not []interface{}`) when IPRegion API response no longer includes `region` and instead returns `support_platform_regions`.
+
+ENHANCEMENTS:
+* resource/fortiappseccloud_waf_app: Extract platform from current API field `cluster:platform` instead of deprecated `region`.
+
 ## 1.0.3 (December 9, 2024)
 
 BUG FIXES:

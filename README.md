@@ -17,7 +17,7 @@ terraform {
   required_providers {
     fortiappseccloud = {
       source  = "fortinet/fortiappseccloud"
-      version = "1.0.0"
+      version = "1.0.4"
     }
   }
 }

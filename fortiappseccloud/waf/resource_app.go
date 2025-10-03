@@ -10,6 +10,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+func dbgJSON(v interface{}) string {
+    b, err := json.MarshalIndent(v, "", "  ")
+    if err != nil {
+        return fmt.Sprintf("%#v", v)
+    }
+    return string(b)
+}
+
 func BoolToInt(v bool) int {
 	if v {
 		return 1
@@ -197,45 +205,71 @@ func resourceWAFAppCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if serverList != nil {
+		log.Printf("[DEBUG] serverList=%v", serverList)
+
 		flag := false
 		for _, e := range serverList {
-			serverTest := ServerTest{BackendIP: e.(string), BackendType: service, Domain: domain}
+			ip, _ := e.(string)
+			serverTest := ServerTest{BackendIP: ip, BackendType: service, Domain: domain}
 			stestClient := NewServerTestClient(c, &serverTest)
 			stestClient.Send()
 			testRead, err := stestClient.ReadData()
 
-			if err == nil {
-				testStatus = testRead.(map[string]interface{})
-				flag = true
-				ipregion := &IPRegion{Domain: domain, EpIP: e.(string), ExtraDomain: extra, CustomPort: custom}
-
-				ipRegionClient := NewIPRegionClient(c, ipregion)
-				ipRegionClient.Send()
-
-				iregion, err := ipRegionClient.ReadData() // get_ip_region
-				if err != nil {
-					return err
-				}
-				region = iregion.(map[string]interface{})
-				break
+			if err != nil {
+				log.Printf("[ERROR] ServerTest ip=%s err=%v", ip, err)
+				continue
 			}
+			log.Printf("[DEBUG] ServerTest resp ip=%s raw=%s", ip, dbgJSON(testRead))
+
+			// safe casting
+			tm, ok := testRead.(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("unexpected ServerTest response type: %T raw=%s", testRead, dbgJSON(testRead))
+			}
+			testStatus = tm
+			flag = true
+
+			ipregion := &IPRegion{Domain: domain, EpIP: ip, ExtraDomain: extra, CustomPort: custom}
+			ipRegionClient := NewIPRegionClient(c, ipregion)
+			ipRegionClient.Send()
+
+			iregion, err := ipRegionClient.ReadData() // get_ip_region
+			if err != nil {
+				log.Printf("[ERROR] IPRegion ip=%s err=%v", ip, err)
+				return err
+			}
+			log.Printf("[DEBUG] IPRegion resp ip=%s raw=%s", ip, dbgJSON(iregion))
+
+			// safe casting
+			rmap, ok := iregion.(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("unexpected IPRegion response type: %T raw=%s", iregion, dbgJSON(iregion))
+			}
+			region = rmap
+			break
 		}
 		if !flag {
 			return fmt.Errorf("Couldn't find active server!")
 		}
 	} else {
+		log.Printf("[DEBUG] serverList is nil, fallback to serverAddr=%s", serverAddr)
+
 		serverTest := ServerTest{BackendIP: serverAddr, BackendType: service, Domain: domain}
 		stestClient := NewServerTestClient(c, &serverTest)
 		stestClient.Send()
 		testRead, err := stestClient.ReadData()
 		if err != nil {
-			return fmt.Errorf("WAF test server failed!" + err.Error())
+			return fmt.Errorf("WAF test server failed! %v", err)
 		}
+		log.Printf("[DEBUG] ServerTest resp ip=%s raw=%s", serverAddr, dbgJSON(testRead))
 
-		testStatus = testRead.(map[string]interface{})
+		tm, ok := testRead.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected ServerTest response type: %T raw=%s", testRead, dbgJSON(testRead))
+		}
+		testStatus = tm
 
 		ipregion := &IPRegion{Domain: domain, EpIP: serverAddr, ExtraDomain: extra, CustomPort: custom}
-
 		ipRegionClient := NewIPRegionClient(c, ipregion)
 		ipRegionClient.Send()
 
@@ -243,7 +277,13 @@ func resourceWAFAppCreate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		region = iregion.(map[string]interface{})
+		log.Printf("[DEBUG] IPRegion resp ip=%s raw=%s", serverAddr, dbgJSON(iregion))
+
+		rmap, ok := iregion.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected IPRegion response type: %T raw=%s", iregion, dbgJSON(iregion))
+		}
+		region = rmap
 	}
 
 	appQuery := &AppQuery{AppName: appName}
@@ -283,21 +323,40 @@ func resourceWAFAppCreate(d *schema.ResourceData, m interface{}) error {
 			ServerType:     strings.ToLower(service), // origin_server_service
 		}
 
+		log.Printf("[DEBUG] AppCreate > region: %s", dbgJSON(region))
+		var cluster map[string]interface{}
 		if !cdn {
 			appCreate.ServerCountry, _ = region["location"].(string)
-			cluster := region["cluster"].(map[string]interface{})
+			cluster = region["cluster"].(map[string]interface{})
 			appCreate.Region = cluster["single"].(string)
 		}
 		if cdn && is_globa_cdn == 0 {
-			cluster := region["cluster"].(map[string]interface{})
+			cluster = region["cluster"].(map[string]interface{})
 			appCreate.Continent = cluster["continent"].(string)
 			log.Printf("Continent CDN: %s", appCreate.Continent)
 		} else {
 			appCreate.Continent = ""
 		}
-		platformList := region["region"].([]interface{})
+		var platformList []interface{}
+		log.Printf("[DEBUG] AppCreate > cluster: %s", dbgJSON(cluster))
+		if cluster != nil {
+			if plat, ok := cluster["platform"]; ok && plat != nil {
+				// Handle both string and slice cases
+				switch v := plat.(type) {
+				case []interface{}:
+					platformList = v
+				case string:
+					// If it's a string, create a slice with one element
+					platformList = []interface{}{v}
+				default:
+					// Unexpected type, create a default slice
+					platformList = []interface{}{"AWS"}
+				}
+			}
+		}
 		if len(platformList) > 0 {
 			appCreate.Platform = platformList[0].(string)
+			log.Printf("Platform: %s", appCreate.Platform)
 		} else {
 			appCreate.Platform = "AWS"
 		}
