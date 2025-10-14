@@ -7,7 +7,7 @@ The Terraform FortiAppSecCloud provider can be used to automatically onboard or 
 The following example demonstrates how to use the Terraform FortiAppSecCloud provider to perform configuration changes on FortiAppSecCloud. Requirements are as follows:
 
 1. FortiAppSecCloud API access.
-2. FortiAppSecCloud Provider version 1.0.4 or later.
+2. FortiAppSecCloud Provider version 1.0.5 or later.
 3. Terraform version 0.13 or later.
 
 ## Configure FortiAppSecCloud with the Terraform Provider
@@ -84,7 +84,7 @@ The following example demonstrates how to use the Terraform FortiAppSecCloud pro
     ```sh
     $ terraform -v
     Terraform v1.0.6
-    + provider.fortiappseccloud v1.0.4
+    + provider.fortiappseccloud v1.0.5
     ```
 
 ## Step 5: Preview Configuration Changes

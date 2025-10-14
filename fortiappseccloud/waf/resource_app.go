@@ -11,11 +11,11 @@ import (
 )
 
 func dbgJSON(v interface{}) string {
-    b, err := json.MarshalIndent(v, "", "  ")
-    if err != nil {
-        return fmt.Sprintf("%#v", v)
-    }
-    return string(b)
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return fmt.Sprintf("%#v", v)
+	}
+	return string(b)
 }
 
 func BoolToInt(v bool) int {
@@ -130,6 +130,38 @@ func getMapIntVal(v interface{}) map[string]int {
 	}
 	return m
 
+}
+
+func getFloat64OrDefault(m map[string]interface{}, key string, defaultValue float64) float64 {
+	if m == nil {
+		return defaultValue
+	}
+
+	val, exists := m[key]
+	if !exists || val == nil {
+		return defaultValue
+	}
+
+	// Try to convert to float64
+	switch v := val.(type) {
+	case float64:
+		return v
+	case int:
+		return float64(v)
+	case int64:
+		return float64(v)
+	case float32:
+		return float64(v)
+	case int32:
+		return float64(v)
+	case int16:
+		return float64(v)
+	case int8:
+		return float64(v)
+	default:
+		// If we can't convert, return default
+		return defaultValue
+	}
 }
 
 func resourceWAFAppCreate(d *schema.ResourceData, m interface{}) error {
@@ -314,8 +346,8 @@ func resourceWAFAppCreate(d *schema.ResourceData, m interface{}) error {
 			ServerAddress:  serverAddr,
 			CustomPort:     custom,
 			Service:        apiService, //list type
-			Availability:   testStatus["head_availability"].(float64),
-			StatusCode:     testStatus["head_status_code"].(float64),
+			Availability:   getFloat64OrDefault(testStatus, "head_availability", 0),
+			StatusCode:     getFloat64OrDefault(testStatus, "head_status_code", 200),
 			CDNStatus:      cdnStatus,
 			IsGlobaCdn:     is_globa_cdn,
 			TemplateEnable: templateEnable,

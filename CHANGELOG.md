@@ -1,3 +1,8 @@
+## 1.0.5 (October 14, 2025)
+
+BUG FIXES:
+* resource/fortiappseccloud_waf_app: Fixed panic when head_availability and head_status_code have no default values by implementing getFloat64OrDefault helper function.
+
 ## 1.0.4 (October 3, 2025)
 
 BUG FIXES:
