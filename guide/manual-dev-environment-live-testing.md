@@ -134,7 +134,7 @@ From the provider repository root:
 ```shell
 export FAS_PROVIDER_REPO="$(pwd)"
 export FAS_LIVE_ROOT="/tmp/fortiappseccloud-dev-live"
-export FAS_PROVIDER_VERSION="2.0.0-rc.1"
+export FAS_PROVIDER_VERSION="2.0.0-rc.2"
 export FAS_PROVIDER_TARGET="$(go env GOOS)_$(go env GOARCH)"
 export FAS_MIRROR_ROOT="${FAS_LIVE_ROOT}/provider-mirror"
 export FAS_PACKAGE_DIR="${FAS_MIRROR_ROOT}/registry.terraform.io/sqaz91819/fas-dev/${FAS_PROVIDER_VERSION}/${FAS_PROVIDER_TARGET}"
@@ -145,7 +145,7 @@ go build -trimpath \
   "${FAS_PROVIDER_REPO}"
 ```
 
-The `2.0.0-rc.1` value is a local package label for the mirror. It does not publish
+The `2.0.0-rc.2` value is a local package label for the mirror. It does not publish
 anything and does not have to match a registry release.
 
 Create `${FAS_LIVE_ROOT}/terraform.rc` with the following content. Terraform
@@ -216,7 +216,7 @@ terraform {
   required_providers {
     fortiappseccloud = {
       source  = "sqaz91819/fas-dev"
-      version = "= 2.0.0-rc.1"
+      version = "= 2.0.0-rc.2"
     }
   }
 }

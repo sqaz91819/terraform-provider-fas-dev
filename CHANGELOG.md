@@ -1,6 +1,6 @@
 ## Unreleased
 
-## 2.0.0-rc.1 (August 19, 2026)
+## 2.0.0-rc.2 (August 19, 2026)
 
 NOTES:
 
@@ -13,7 +13,7 @@ BUG FIXES:
 
 BREAKING CHANGES:
 
-* **Configuration migration is required:** Existing v1.0.5 state for `fortiappseccloud_waf_app` and `fortiappseccloud_waf_openapi_validation` is upgraded automatically, but configurations must be updated to the v2 schema before the first normal plan. Follow the [v1.0.5 to v2.0 upgrade guide](https://github.com/sqaz91819/terraform-provider-fas-dev/blob/v2.0.0-rc.1/website/docs/guides/v1_0_5_to_v2_0_0.html.markdown), begin with a refresh-only plan, and do not apply an unexpected delete or replacement plan.
+* **Configuration migration is required:** Existing v1.0.5 state for `fortiappseccloud_waf_app` and `fortiappseccloud_waf_openapi_validation` is upgraded automatically, but configurations must be updated to the v2 schema before the first normal plan. Follow the [v1.0.5 to v2.0 upgrade guide](https://github.com/sqaz91819/terraform-provider-fas-dev/blob/v2.0.0-rc.2/website/docs/guides/v1_0_5_to_v2_0_0.html.markdown), begin with a refresh-only plan, and do not apply an unexpected delete or replacement plan.
 * **Application schema and identity:** `fortiappseccloud_waf_app` now uses stable application endpoint IDs and replaces legacy arguments such as `app_service`, `origin_server_*`, `block`, and computed `cname` with typed `services`, `initial_origin`, `block_mode`, and `cnames` fields. Platform and placement must be represented explicitly where required.
 * **OpenAPI validation identity:** `fortiappseccloud_waf_openapi_validation` now identifies its application with `ep_id` instead of `app_name`. Keep the existing Terraform resource address and validation-file paths during migration.
 

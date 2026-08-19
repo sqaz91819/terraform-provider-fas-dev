@@ -9,8 +9,8 @@ Before using these examples, review the public [WAF configuration and import gui
 The following example demonstrates how to use the Terraform FortiAppSecCloud provider to perform configuration changes on FortiAppSecCloud. Requirements are as follows:
 
 1. FortiAppSecCloud API access.
-2. FortiAppSecCloud Provider version 2.0.0-rc.1.
-3. A Terraform version supported by provider 2.0.0-rc.1.
+2. FortiAppSecCloud Provider version 2.0.0-rc.2.
+3. A Terraform version supported by provider 2.0.0-rc.2.
 
 ## Configure FortiAppSecCloud with the Terraform Provider
 
@@ -157,7 +157,7 @@ The following example demonstrates how to use the Terraform FortiAppSecCloud pro
     ```shell
     $ terraform -v
     Terraform v1.15.x
-    + provider registry.terraform.io/sqaz91819/fas-dev v2.0.0-rc.1
+    + provider registry.terraform.io/sqaz91819/fas-dev v2.0.0-rc.2
     ```
 
 ## Step 5: Preview Configuration Changes
