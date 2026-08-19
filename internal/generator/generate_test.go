@@ -137,7 +137,14 @@ func TestGenerateIsDeterministic(t *testing.T) {
 		}
 		text := string(first[path])
 		if strings.HasSuffix(path, ".markdown") {
-			if !strings.HasPrefix(text, "<!-- "+generatedMarker+" -->\n") {
+			// The generated marker is an HTML comment. It must be present, but
+			// it must NOT be the first line: a leading marker would push the YAML
+			// frontmatter's opening "---" off line 1, so the Terraform Registry
+			// would fail to parse the frontmatter and drop the subcategory.
+			if !strings.HasPrefix(text, "---\n") {
+				t.Fatalf("generated %s must start with YAML frontmatter \"---\", got: %q", path, strings.SplitN(text, "\n", 2)[0])
+			}
+			if !strings.Contains(text, "<!-- "+generatedMarker+" -->") {
 				t.Fatalf("generated %s is missing its generated marker", path)
 			}
 			for _, internalText := range []string{"dev1", "live lifecycle", "live-verified", "Promotion is backed", "Reviewed evidence:"} {

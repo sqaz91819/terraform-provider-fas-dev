@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2.0.0-rc.3 (August 19, 2026)
+
+BUG FIXES:
+
+* **Terraform Registry documentation layout:** Keep YAML frontmatter at the first line of generated WAF resource documentation and move the generated-file marker below it, allowing the Registry to parse page metadata and preserve the WAF subcategory.
+
 ## 2.0.0-rc.2 (August 19, 2026)
 
 NOTES:

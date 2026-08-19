@@ -40,7 +40,7 @@ terraform {
   required_providers {
     fortiappseccloud = {
       source  = "sqaz91819/fas-dev"
-      version = "2.0.0-rc.2"
+      version = "2.0.0-rc.3"
     }
   }
   # Do NOT lock provider version when using dev_overrides - the local build is used.

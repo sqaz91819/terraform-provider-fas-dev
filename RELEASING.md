@@ -15,7 +15,7 @@ GoReleaser joins those sections and uploads the signed provider artifacts.
    version and date. The version must match the tag without its leading `v`:
 
    ```markdown
-   ## 2.0.0-rc.2 (August 19, 2026)
+   ## 2.0.0-rc.3 (August 19, 2026)
    ```
 
 2. Add a new empty `## Unreleased` section above the versioned section for
@@ -25,7 +25,7 @@ GoReleaser joins those sections and uploads the signed provider artifacts.
 
    ```shell
    release_header=$(mktemp)
-   ./scripts/extract-release-header.sh v2.0.0-rc.2 CHANGELOG.md "$release_header"
+   ./scripts/extract-release-header.sh v2.0.0-rc.3 CHANGELOG.md "$release_header"
    sed -n '1,120p' "$release_header"
    ```
 
