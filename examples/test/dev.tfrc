@@ -1,0 +1,25 @@
+# Terraform CLI dev_overrides for the local (unpublished) provider
+
+# This file lets a local `terraform plan/apply` use the provider built straight
+# from this repository instead of downloading `sqaz91819/fas-dev` from
+# the public Terraform Registry (the provider is not publicly released yet).
+#
+# Load it WITHOUT touching your real ~/.terraformrc by exporting:
+#
+#   export TF_CLI_CONFIG_FILE="$(pwd)/dev.tfrc"
+#
+# Only `terraform plan/apply/destroy` and `terraform providers schema` use the
+# override. `terraform init` will show a warning that the provider is
+# "overridden by a dev override configuration" and will NOT download it - that
+# is expected and correct for local development.
+#
+# The directory below is where `terraform-provider-fortiappseccloud` (the
+# binary named `terraform-provider-<provider>`) is expected. Adjust the first
+# path by editing the provider_dir variable around the script in README.md.
+
+provider_installation {
+  dev_overrides {
+    "registry.terraform.io/sqaz91819/fas-dev" = "__PROVIDER_BUILD_DIR__"
+  }
+  direct {}
+}

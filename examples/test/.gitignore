@@ -1,0 +1,22 @@
+# Local Terraform workspace state. Never commit these.
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.json
+
+# Saved plan files.
+plan
+tfplan*
+
+
+# Local credentials / overrides. Never commit these.
+terraform.tfvars
+*.tfvars
+
+# Local provider build artifact (directory + binary).
+.provider-bin/
+### .provider-bin/terraform-provider-fortiappseccloud
+terraform-provider-fortiappseccloud
+
+# Generated dev override config (contains an absolute path, machine-specific).
+dev.tfrc.local

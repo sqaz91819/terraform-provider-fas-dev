@@ -6,3 +6,6 @@
 *.backup
 ./*.tfstate
 terraform.tfstate
+.claude/*
+.codex/*
+*.txt
